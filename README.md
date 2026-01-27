@@ -1,7 +1,7 @@
 # Manta
 
 ## What is Manta?
-It's super cool ligth blazing fast pomodoro like program.
+It's super cool ligth blazing fast pomodoro like timer.
 
 
 ## Is it cool?
