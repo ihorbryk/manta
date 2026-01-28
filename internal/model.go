@@ -3,6 +3,7 @@ package internal
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
@@ -10,6 +11,7 @@ import (
 )
 
 const (
+	// work = 5 // use for test
 	work     = 25 * 60
 	rest     = 5 * 60
 	WORKTIME = "work"
@@ -39,6 +41,7 @@ type model struct {
 	cursor   int
 	choice   string
 	pause    bool
+	endTime  time.Time
 }
 
 func NewModel() model {
@@ -65,9 +68,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case WORKTIME:
 				m.timeLeft = work
 				m.timeType = WORKTIME
+				m.endTime = time.Now().Add(time.Duration(m.timeLeft) * time.Second)
 			case RESTTIME:
 				m.timeLeft = rest
 				m.timeType = RESTTIME
+				m.endTime = time.Now().Add(time.Duration(m.timeLeft) * time.Second)
 			}
 
 		case "down", "j":
@@ -77,6 +82,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		case " ":
+			m.endTime = time.Now().Add(time.Duration(m.timeLeft) * time.Second)
 			m.pause = !m.pause
 
 		case "esc":
@@ -104,6 +110,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 		if m.progress.Percent() == 1.0 && m.timeLeft == 0 {
+			PlayNotification()
 			_ = notify(fmt.Sprintf("Time to %s is left", m.timeType), "")
 		}
 
@@ -167,8 +174,8 @@ func (m model) View() string {
 	}
 
 	return "\n" +
-		pad + fmt.Sprintf("%02dm/%02dm", (work%3600)/60, (rest%3600)/60) + "\n\n" +
+		pad + m.timeType + "\n\n" +
 		pad + m.progress.View() + "\n\n" +
-		pad + fmt.Sprintf("%s -> %02dm%02ds %v", m.timeType, minutes, seconds, pause) +
+		pad + fmt.Sprintf("%02dm%02ds -> %s %v", minutes, seconds, m.endTime.Format("15:04:05"), pause) +
 		pad + helpStyle("Press 'q' key to quit")
 }

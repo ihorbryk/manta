@@ -7,7 +7,7 @@ func notify(title, message string) error {
 		"terminal-notifier",
 		"-title", title,
 		"-message", message,
-		"-sender", "manta",
+		"-activate", "com.mitchellh.ghostty",
 	)
 	return cmd.Run()
 }
