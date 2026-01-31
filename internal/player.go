@@ -2,18 +2,19 @@ package internal
 
 import (
 	"bytes"
-	"os"
 	"time"
 
 	"github.com/ebitengine/oto/v3"
 	"github.com/hajimehoshi/go-mp3"
+
+	"github.com/ihorbryk/manta/assets"
 )
 
 func PlayNotification() {
-	// Read the mp3 file into memory
-	fileBytes, err := os.ReadFile("./assets/notify.mp3")
+	// Read the embedded mp3 file into memory
+	fileBytes, err := assets.NotifySound.ReadFile("notify.mp3")
 	if err != nil {
-		panic("reading my-file.mp3 failed: " + err.Error())
+		panic("reading embedded notify.mp3 failed: " + err.Error())
 	}
 
 	// Convert the pure bytes into a reader object that can be used with the mp3 decoder
